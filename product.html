@@ -96,16 +96,20 @@ button{
 </div>
 
 <script>
-// LOAD PRODUCT DATA FROM localStorage
-const pname  = localStorage.getItem("p_name") || "Handmade Product";
-const pprice = localStorage.getItem("p_price") || "0";
-const pimage = localStorage.getItem("p_image") || "";
+/* ===== LOAD PRODUCT DATA ===== */
+const pname  = localStorage.getItem("p_name");
+const pprice = localStorage.getItem("p_price");
+const pimage = localStorage.getItem("p_image");
 
-document.getElementById("pname").innerText = pname;
-document.getElementById("pprice").innerText = "₹" + pprice;
-document.getElementById("pimg").src = pimage;
+if(!pname || !pprice || !pimage){
+  alert("Product data missing. Please go back and select product again.");
+}
 
-// IMAGE VIEW
+document.getElementById("pname").innerText = pname || "";
+document.getElementById("pprice").innerText = "₹" + (pprice || "0");
+document.getElementById("pimg").src = pimage || "";
+
+/* ===== IMAGE VIEW ===== */
 function openImg(){
   document.getElementById("fullImg").src = pimage;
   document.getElementById("imgModal").style.display = "block";
@@ -114,15 +118,11 @@ function closeImg(){
   document.getElementById("imgModal").style.display = "none";
 }
 
-// ✅ BUY NOW → CHECKOUT (NO URL PARAMETER)
+/* ===== BUY NOW → CHECKOUT ===== */
 function buyNow(){
   window.location.href = "checkout.html";
 }
 </script>
 
-
-
 </body>
 </html>
-
-

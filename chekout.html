@@ -1,196 +1,157 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <title>Checkout</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>Checkout</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial;
-      background: #f1f3f6;
-    }
-
-    .box {
-      max-width: 420px;
-      margin: 15px auto;
-      background: #fff;
-      padding: 15px;
-      border-radius: 14px;
-      box-shadow: 0 10px 20px rgba(0, 0, 0, .15);
-    }
-
-    h2 {
-      margin: 0;
-    }
-
-    .price {
-      color: #2874f0;
-      font-weight: bold;
-      margin-bottom: 10px;
-    }
-
-    input,
-    textarea {
-      width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-size: 14px;
-    }
-
-    textarea {
-      resize: none;
-    }
-
-    .qty {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      margin-top: 10px;
-    }
-
-    .qty button {
-      width: 40px;
-      height: 40px;
-      border-radius: 6px;
-      border: none;
-      background: #2874f0;
-      color: #fff;
-      font-size: 20px;
-      cursor: pointer;
-    }
-
-    .qty input {
-      text-align: center;
-      font-weight: bold;
-    }
-
-    button {
-      width: 100%;
-      margin-top: 15px;
-      padding: 14px;
-      background: #2874f0;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-
-    .summary {
-      background: #f9f9f9;
-      padding: 10px;
-      margin-top: 12px;
-      border-radius: 8px;
-    }
-
-    .total {
-      font-weight: bold;
-      color: #000;
-      margin-top: 6px;
-    }
-  </style>
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:#f1f3f6
+}
+.box{
+  max-width:420px;
+  margin:15px auto;
+  background:#fff;
+  padding:15px;
+  border-radius:14px;
+  box-shadow:0 10px 20px rgba(0,0,0,.15)
+}
+.price{
+  color:#2874f0;
+  font-weight:bold;
+  margin-bottom:10px
+}
+input,textarea{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+  border-radius:6px;
+  border:1px solid #ccc;
+  font-size:14px
+}
+textarea{resize:none}
+.qty{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  margin-top:10px
+}
+.qty button{
+  width:40px;
+  height:40px;
+  border:none;
+  border-radius:6px;
+  background:#2874f0;
+  color:#fff;
+  font-size:20px;
+  cursor:pointer
+}
+.qty input{
+  text-align:center;
+  font-weight:bold
+}
+button{
+  width:100%;
+  margin-top:15px;
+  padding:14px;
+  background:#2874f0;
+  color:#fff;
+  border:none;
+  border-radius:8px;
+  font-size:16px;
+  cursor:pointer
+}
+.summary{
+  background:#f9f9f9;
+  padding:10px;
+  margin-top:12px;
+  border-radius:8px
+}
+.total{
+  font-weight:bold;
+  margin-top:6px
+}
+</style>
 </head>
 
 <body>
 
-  <div class="box">
+<div class="box">
 
-    <h2 id="pName"></h2>
-    <div class="price">Price: ₹<span id="unitPrice"></span></div>
+<h2 id="pName"></h2>
+<div class="price">Price: ₹<span id="unitPrice"></span></div>
 
-    <h3>Delivery Details</h3>
+<h3>Delivery Details</h3>
 
-    <input id="cName" placeholder="Full Name *">
+<input id="cName" placeholder="Full Name *">
+<input id="cPhone" placeholder="Mobile Number *" maxlength="10"
+ oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+<input id="cPin" placeholder="PIN Code (6 digit) *" maxlength="6"
+ oninput="this.value=this.value.replace(/[^0-9]/g,'')">
 
-    <!-- phone number only -->
-    <input id="cPhone" placeholder="Mobile Number *" type="tel" maxlength="10"
-      oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+<input id="district" placeholder="District *">
+<input id="block" placeholder="Block *">
+<input id="ps" placeholder="Police Station (P.S) *">
+<input id="po" placeholder="Post Office (P.O) *">
 
-    <!-- pin number only -->
-    <input id="cPin" placeholder="PIN Code (6 digit) *" type="tel" maxlength="6"
-      oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+<input id="house" placeholder="House No / Area / Landmark *">
+<input id="village" placeholder="Village / Town">
+<input value="Assam" readonly>
 
-    <input id="district" placeholder="District *">
-    <input id="block" placeholder="Block *">
-    <input id="ps" placeholder="Police Station (P.S) *">
-    <input id="po" placeholder="Post Office (P.O) *">
+<div class="qty">
+  <button onclick="decQty()">−</button>
+  <input id="qty" value="1" readonly>
+  <button onclick="incQty()">+</button>
+</div>
 
-    <input id="house" placeholder="House No / Area / Landmark *">
-    <input id="village" placeholder="Village / Town">
+<button onclick="showSummary()">Continue</button>
 
-    <input value="Assam" readonly>
+<div id="summaryBox" style="display:none">
+  <div class="summary" id="summary"></div>
+  <button onclick="placeOrder()">Place Order</button>
+</div>
 
-    <!-- QUANTITY -->
-    <div class="qty">
-      <button onclick="decQty()">−</button>
-      <input id="qty" value="1" readonly>
-      <button onclick="incQty()">+</button>
-    </div>
+</div>
 
-    <button onclick="showSummary()">Continue</button>
+<script>
+// 🔹 GET PRODUCT FROM localStorage
+const pname = localStorage.getItem("p_name") || "Product";
+const priceRaw = localStorage.getItem("p_price") || "0";
 
-    <div id="summaryBox" style="display:none">
-      <div class="summary" id="summary"></div>
-      <button onclick="placeOrder()">Place Order</button>
-    </div>
+// ₹799 / 799 → number
+const unit = Number(priceRaw.replace(/[^\d]/g,'')) || 0;
 
-  </div>
+pName.innerText = pname;
+unitPrice.innerText = unit;
 
-  <script>
-    // GET PRODUCT DATA FROM URL
-// GET PRODUCT DATA FROM localStorage
-const pnameLS = localStorage.getItem("p_name") || "";
-const priceLS = localStorage.getItem("p_price") || "0";
+// helpers
+function validPhone(p){ return /^[6-9]\d{9}$/.test(p) }
+function validPin(p){ return /^\d{6}$/.test(p) }
 
-document.getElementById("pName").innerText = pnameLS;
+// qty
+function incQty(){ qty.value = Number(qty.value)+1 }
+function decQty(){ if(qty.value>1) qty.value-- }
 
-// extract number from ₹1,999
-const unit = Number(priceLS.replace(/[^\d]/g, '')) || 0;
-document.getElementById("unitPrice").innerText = unit;
+// summary
+function showSummary(){
+  if(!cName.value||!cPhone.value||!cPin.value||
+     !district.value||!block.value||!ps.value||
+     !po.value||!house.value){
+    alert("Please fill all required fields");
+    return;
+  }
+  if(!validPhone(cPhone.value)){ alert("Invalid mobile"); return }
+  if(!validPin(cPin.value)){ alert("Invalid PIN"); return }
 
-    const unit = Number(priceStr || 0);
-    unitPrice.innerText = unit;
+  const q = Number(qty.value);
+  const total = unit*q;
 
-    // helpers
-    function validPhone(p) { return /^[6-9]\d{9}$/.test(p); }
-    function validPin(p) { return /^\d{6}$/.test(p); }
-
-    // quantity
-    function incQty() { qty.value = Number(qty.value) + 1; }
-    function decQty() { if (qty.value > 1) qty.value = Number(qty.value) - 1; }
-
-    // SHOW SUMMARY
-    function showSummary() {
-      if (
-        !cName.value || !cPhone.value || !cPin.value ||
-        !district.value || !block.value || !ps.value ||
-        !po.value || !house.value
-      ) {
-        alert("Please fill all required (*) fields");
-        return;
-      }
-
-      if (!validPhone(cPhone.value)) {
-        alert("Invalid mobile number");
-        return;
-      }
-
-      if (!validPin(cPin.value)) {
-        alert("Invalid PIN code");
-        return;
-      }
-
-      const q = Number(qty.value);
-      const total = unit * q;
-
-      summaryBox.style.display = "block";
-      summary.innerHTML = `
-<b>Product:</b> ${pName.innerText}<br>
+  summaryBox.style.display="block";
+  summary.innerHTML = `
+<b>Product:</b> ${pname}<br>
 <b>Unit Price:</b> ₹${unit}<br>
 <b>Quantity:</b> ${q}<br>
 <div class="total">Total: ₹${total}</div><br>
@@ -200,22 +161,22 @@ document.getElementById("unitPrice").innerText = unit;
 <b>PIN:</b> ${cPin.value}<br>
 <b>District:</b> ${district.value}<br>
 <b>Block:</b> ${block.value}<br>
-<b>Police Station:</b> ${ps.value}<br>
-<b>Post Office:</b> ${po.value}<br>
-<b>House / Area:</b> ${house.value}<br>
+<b>P.S:</b> ${ps.value}<br>
+<b>P.O:</b> ${po.value}<br>
+<b>Address:</b> ${house.value}<br>
 <b>Village:</b> ${village.value}<br>
 <b>State:</b> Assam
 `;
-    }
+}
 
-    // PLACE ORDER
-    function placeOrder() {
-      const q = Number(qty.value);
-      const total = unit * q;
+// whatsapp order
+function placeOrder(){
+  const q = Number(qty.value);
+  const total = unit*q;
 
-      let msg =
-        `New Order 🛒
-Product: ${pName.innerText}
+  const msg = `
+New Order 🛒
+Product: ${pname}
 Unit Price: ₹${unit}
 Quantity: ${q}
 Total: ₹${total}
@@ -225,24 +186,19 @@ Mobile: ${cPhone.value}
 PIN: ${cPin.value}
 District: ${district.value}
 Block: ${block.value}
-Police Station: ${ps.value}
-Post Office: ${po.value}
-House/Area: ${house.value}
+P.S: ${ps.value}
+P.O: ${po.value}
+Address: ${house.value}
 Village: ${village.value}
-State: Assam`;
+State: Assam
+`;
 
-      window.open(
-        "https://wa.me/919395666204?text=" + encodeURIComponent(msg),
-        "_blank"
-      );
-
-      setTimeout(() => {
-        window.location.href = "success.html";
-      }, 800);
-    }
-  </script>
+  window.open(
+    "https://wa.me/919395666204?text="+encodeURIComponent(msg),
+    "_blank"
+  );
+}
+</script>
 
 </body>
-
-
 </html>

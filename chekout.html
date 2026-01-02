@@ -143,9 +143,16 @@
 
   <script>
     // GET PRODUCT DATA FROM URL
-    const params = new URLSearchParams(window.location.search);
-    pName.innerText = params.get("name") || "";
-    const priceStr = (params.get("price") || "").replace(/[^\d]/g, '');
+// GET PRODUCT DATA FROM localStorage
+const pnameLS = localStorage.getItem("p_name") || "";
+const priceLS = localStorage.getItem("p_price") || "0";
+
+document.getElementById("pName").innerText = pnameLS;
+
+// extract number from ₹1,999
+const unit = Number(priceLS.replace(/[^\d]/g, '')) || 0;
+document.getElementById("unitPrice").innerText = unit;
+
     const unit = Number(priceStr || 0);
     unitPrice.innerText = unit;
 
@@ -236,5 +243,6 @@ State: Assam`;
   </script>
 
 </body>
+
 
 </html>

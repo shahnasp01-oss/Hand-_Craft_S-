@@ -96,54 +96,33 @@ button{
 </div>
 
 <script>
-/* LOAD PRODUCT DATA FROM localStorage */
-const pnameEl = document.getElementById("pname");
-const ppriceEl = document.getElementById("pprice");
-const pimgEl = document.getElementById("pimg");
-const fullImg = document.getElementById("fullImg");
-const imgModal = document.getElementById("imgModal");
+// LOAD PRODUCT DATA FROM localStorage
+const pname  = localStorage.getItem("p_name") || "Handmade Product";
+const pprice = localStorage.getItem("p_price") || "0";
+const pimage = localStorage.getItem("p_image") || "";
 
-// get data
-const productName  = localStorage.getItem("p_name") || "Handmade Product";
-const productPrice = localStorage.getItem("p_price") || "0";
-const productImage = localStorage.getItem("p_image") || "";
+document.getElementById("pname").innerText = pname;
+document.getElementById("pprice").innerText = "₹" + pprice;
+document.getElementById("pimg").src = pimage;
 
-// set data
-pnameEl.innerText = productName;
-ppriceEl.innerText = "₹" + productPrice;
-pimgEl.src = productImage;
-
-/* IMAGE VIEW */
+// IMAGE VIEW
 function openImg(){
-  fullImg.src = pimgEl.src;
-  imgModal.style.display = "block";
+  document.getElementById("fullImg").src = pimage;
+  document.getElementById("imgModal").style.display = "block";
 }
-
 function closeImg(){
-  imgModal.style.display = "none";
+  document.getElementById("imgModal").style.display = "none";
 }
 
-/* BUY NOW → CHECKOUT (FIXED) */
+// ✅ BUY NOW → CHECKOUT (NO URL PARAMETER)
 function buyNow(){
-
-  if(!productName || !productPrice){
-    alert("Product data missing");
-    return;
-  }
-
-  // remove ₹ if exists
-  const cleanPrice = productPrice.replace(/[^\d]/g, "");
-
-  const url =
-    "checkout.html" +
-    "?name=" + encodeURIComponent(productName) +
-    "&price=" + encodeURIComponent(cleanPrice);
-
-  window.location.href = url;
+  window.location.href = "checkout.html";
 }
 </script>
 
 
+
 </body>
 </html>
+
 

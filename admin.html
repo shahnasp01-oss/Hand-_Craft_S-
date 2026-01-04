@@ -56,12 +56,16 @@ function login(){
   auth.signInWithEmailAndPassword(email.value,password.value)
     .catch(e=>alert(e.message));
 }
-
 auth.onAuthStateChanged(user=>{
   if(user){
+    document.querySelector("h3").style.display="none";
+    email.style.display="none";
+    password.style.display="none";
+    document.querySelector("button").style.display="none";
     panel.style.display="block";
   }
 });
+
 
 function add(){
   db.push({

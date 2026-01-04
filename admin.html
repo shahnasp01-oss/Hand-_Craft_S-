@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin Login</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script src="https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.7.0/firebase-database.js"></script>
+
+<style>
+body{font-family:Arial;max-width:420px;margin:auto;padding:15px}
+input,button{width:100%;padding:12px;margin:6px 0}
+button{background:black;color:white;border:none}
+.card{border:1px solid #ddd;padding:10px;margin:8px 0}
+</style>
+</head>
+<body>
+
+<h3>Admin Login</h3>
+<input id="email" placeholder="Email">
+<input id="password" type="password" placeholder="Password">
+<button onclick="login()">LOGIN</button>
+
+<div id="panel" style="display:none">
+
+<h3>Add Product</h3>
+<input id="name" placeholder="Product name">
+<input id="price" placeholder="Price">
+<input id="img" placeholder="Image file name">
+<button onclick="add()">ADD PRODUCT</button>
+
+<h3>Products</h3>
+<div id="list"></div>
+
+<button onclick="logout()">LOGOUT</button>
+</div>
+
+<script>
+const firebaseConfig = {
+  apiKey: "PASTE_HERE",
+  authDomain: "PASTE_HERE",
+  databaseURL: "PASTE_HERE",
+  projectId: "PASTE_HERE"
+};
+firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+const db = firebase.database().ref("products");
+
+function login(){
+  auth.signInWithEmailAndPassword(email.value,password.value)
+  .catch(e=>alert(e.message));
+}
+
+auth.onAuthStateChanged(u=>{
+  if(u){
+    panel.style.display="block";
+  }
+});
+
+function add(){
+  db.push({
+    name:name.value,
+    price:price.value,
+    image:img.value
+  });
+}
+
+db.on("value", snap=>{
+  list.innerHTML="";
+  snap.forEach(x=>{
+    let k=x.key,v=x.val();
+    list.innerHTML+=`
+    <div class="card">
+      ${v.name} - ₹${v.price}
+      <button onclick="db.child('${k}').remove()">DELETE</button>
+    </div>`;
+  });
+});
+
+function logout(){
+  auth.signOut();
+  location.reload();
+}
+</script>
+
+</body>
+</html>

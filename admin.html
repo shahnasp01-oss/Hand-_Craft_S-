@@ -53,9 +53,11 @@
     }
     .edit-btn {
         background: #ffa500;
+        margin-top: 10px;
     }
     .delete-btn {
         background: #ff4444;
+        margin-top: 10px;
     }
     .img-preview {
         height: 90px;
@@ -97,20 +99,19 @@
 <script>
 // ---------------- FIREBASE SETUP ----------------
 const firebaseConfig = {
-    apiKey: "AIzaSyA0Kz28aa80KRK3FoHI1Vu8btiwEWKZwk0",
-    authDomain: "handcraftadmin.firebaseapp.com",
-    databaseURL: "https://handcraftadmin-default-rtdb.firebaseio.com",
-    projectId: "handcraftadmin",
-    storageBucket: "handcraftadmin.firebasestorage.app",
-    messagingSenderId: "35954316540",
-    appId: "1:35954316540:web:7e2334cd5bfbceddd5b379"
+  apiKey: "AIzaSyDp70r1FmP-n5jPvZFtHa_cxn9J6iK5vJs",
+  authDomain: "handcraft-app-2e144.firebaseapp.com",
+  projectId: "handcraft-app-2e144",
+  storageBucket: "handcraft-app-2e144.firebasestorage.app",
+  messagingSenderId: "391900602122",
+  appId: "1:391900602122:web:48401b0de085608093a4f3",
+  databaseURL: "https://handcraft-app-2e144-default-rtdb.asia-southeast1.firebasedatabase.app"
 };
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database().ref("products");
 const storage = firebase.storage();
 
-// GLOBAL EDIT ID
 let editId = null;
 
 // IMAGE PREVIEW
@@ -135,6 +136,7 @@ document.getElementById("addBtn").onclick = async function () {
 
     let imageUrl = "";
 
+    // upload image if new
     if (file) {
         const storageRef = storage.ref("images/" + Date.now() + "_" + file.name);
         await storageRef.put(file);
@@ -143,16 +145,17 @@ document.getElementById("addBtn").onclick = async function () {
 
     if (editId) {
         // UPDATE
+        const oldImg = document.getElementById(editId).dataset.oldImg;
         db.child(editId).update({
             name: nameVal,
             price: priceVal,
-            image: imageUrl || document.getElementById(editId).dataset.oldImg
+            image: imageUrl || oldImg
         });
 
         editId = null;
         addBtn.innerText = "SAVE PRODUCT";
     } else {
-        // NEW ADD
+        // NEW PRODUCT
         db.push({
             name: nameVal,
             price: priceVal,
@@ -160,11 +163,13 @@ document.getElementById("addBtn").onclick = async function () {
         });
     }
 
+    // reset
     name.value = "";
     price.value = "";
     fileInput.value = "";
     preview.style.display = "none";
 };
+
 
 // LOAD PRODUCTS
 db.on("value", snap => {
@@ -191,15 +196,13 @@ function editItem(id, nameVal, priceVal, imgVal){
     editId = id;
     document.getElementById("name").value = nameVal;
     document.getElementById("price").value = priceVal;
-
     document.getElementById("preview").src = imgVal;
     document.getElementById("preview").style.display = "block";
-
     document.getElementById(id).dataset.oldImg = imgVal;
     addBtn.innerText = "UPDATE PRODUCT";
 }
 
-// DELETE PRODUCT
+// DELETE
 function deleteItem(id){
     if(confirm("Delete this product?")){
         db.child(id).remove();

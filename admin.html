@@ -1,43 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Admin Panel</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>Admin Panel</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
 
-    <style>
-        body { font-family: Arial, sans-serif; max-width: 420px; margin: auto; padding: 15px; background-color: #f4f4f4; }
-        h3 { text-align: center; }
-        input, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 4px; border: 1px solid #ccc; box-sizing: border-box; }
-        button { background: black; color: white; border: none; cursor: pointer; font-weight: bold; }
-        .card { background: white; border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 8px; }
-        .delete-btn { background: #ff4444; margin-top: 10px; }
-        #panel { display: none; }
-    </style>
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #f5f7fb;
+    }
+    header {
+        background: black;
+        padding: 15px;
+        text-align: center;
+        color: white;
+        font-size: 22px;
+        font-weight: bold;
+    }
+    .container {
+        max-width: 650px;
+        margin: auto;
+        padding: 15px;
+    }
+    .card {
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        margin-bottom: 20px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    }
+    input, button {
+        width: 100%;
+        padding: 12px;
+        margin: 8px 0;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        font-size: 16px;
+    }
+    button {
+        background: black;
+        color: white;
+        cursor: pointer;
+        font-weight: bold;
+    }
+    .edit-btn {
+        background: #ffa500;
+    }
+    .delete-btn {
+        background: #ff4444;
+    }
+    .img-preview {
+        height: 90px;
+        border-radius: 6px;
+        margin-top: 10px;
+        object-fit: cover;
+        border: 1px solid #ddd;
+    }
+</style>
 </head>
 <body>
 
-<div id="login-section">
-    <h3>Welcome Admin</h3>
-    <button id="loginBtn">ENTER ADMIN PANEL</button>
+<header>HandCraft Admin Panel</header>
+
+<div class="container">
+
+    <!-- ADD PRODUCT -->
+    <div class="card">
+        <h3>Add / Update Product</h3>
+
+        <input id="name" placeholder="Product Name">
+        <input id="price" placeholder="Price">
+
+        <input type="file" id="fileInput">
+        <img id="preview" class="img-preview" style="display:none;">
+
+        <button id="addBtn">SAVE PRODUCT</button>
+    </div>
+
+    <!-- PRODUCT LIST -->
+    <div class="card">
+        <h3>Product List</h3>
+        <div id="list"></div>
+    </div>
+
 </div>
 
-<div id="panel">
-    <h3>Add Product</h3>
-    <input id="name" placeholder="Product name">
-    <input id="price" placeholder="Price">
-    <input id="img" placeholder="Image file name">
-    <button id="addBtn">ADD PRODUCT</button>
-
-    <hr>
-    <h3>Product List</h3>
-    <div id="list"></div>
-
-    <button id="logoutBtn" style="background: #666;">EXIT PANEL</button>
-</div>
 
 <script>
 // ---------------- FIREBASE SETUP ----------------
@@ -53,48 +108,103 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database().ref("products");
+const storage = firebase.storage();
 
-// ---------------- DIRECT LOGIN ----------------
-document.getElementById("loginBtn").onclick = function(){
-    document.getElementById("login-section").style.display = "none";
-    document.getElementById("panel").style.display = "block";
-};
+// GLOBAL EDIT ID
+let editId = null;
 
-// ---------------- ADD PRODUCT ----------------
-document.getElementById("addBtn").onclick = function(){
-    const nameVal = document.getElementById("name").value;
-    const priceVal = document.getElementById("price").value;
-    const imgVal = document.getElementById("img").value;
-
-    if(nameVal && priceVal) {
-        db.push({ name: nameVal, price: priceVal, image: imgVal });
-        document.getElementById("name").value = "";
-        document.getElementById("price").value = "";
-        document.getElementById("img").value = "";
+// IMAGE PREVIEW
+document.getElementById("fileInput").onchange = function(e){
+    const file = e.target.files[0];
+    if(file){
+        document.getElementById("preview").src = URL.createObjectURL(file);
+        document.getElementById("preview").style.display = "block";
     }
 };
 
-// ---------------- LIST PRODUCTS ----------------
+// ADD or UPDATE PRODUCT
+document.getElementById("addBtn").onclick = async function () {
+    const nameVal = name.value.trim();
+    const priceVal = price.value.trim();
+    const file = fileInput.files[0];
+
+    if (!nameVal || !priceVal) {
+        alert("Name & Price required!");
+        return;
+    }
+
+    let imageUrl = "";
+
+    if (file) {
+        const storageRef = storage.ref("images/" + Date.now() + "_" + file.name);
+        await storageRef.put(file);
+        imageUrl = await storageRef.getDownloadURL();
+    }
+
+    if (editId) {
+        // UPDATE
+        db.child(editId).update({
+            name: nameVal,
+            price: priceVal,
+            image: imageUrl || document.getElementById(editId).dataset.oldImg
+        });
+
+        editId = null;
+        addBtn.innerText = "SAVE PRODUCT";
+    } else {
+        // NEW ADD
+        db.push({
+            name: nameVal,
+            price: priceVal,
+            image: imageUrl
+        });
+    }
+
+    name.value = "";
+    price.value = "";
+    fileInput.value = "";
+    preview.style.display = "none";
+};
+
+// LOAD PRODUCTS
 db.on("value", snap => {
     const listDiv = document.getElementById("list");
     listDiv.innerHTML = "";
-    snap.forEach(childSnap => {
-        const item = childSnap.val();
+
+    snap.forEach(child => {
+        const item = child.val();
+
         listDiv.innerHTML += `
-        <div class="card">
-            <strong>${item.name}</strong> - ₹${item.price}
-            <button class="delete-btn" onclick="deleteItem('${childSnap.key}')">DELETE</button>
-        </div>`;
+            <div id="${child.key}" class="card" style="margin-bottom:10px;">
+                <img src="${item.image}" class="img-preview">
+                <h4>${item.name}</h4>
+                <p>₹ ${item.price}</p>
+                <button class="edit-btn" onclick="editItem('${child.key}', '${item.name}', '${item.price}', '${item.image}')">EDIT</button>
+                <button class="delete-btn" onclick="deleteItem('${child.key}')">DELETE</button>
+            </div>
+        `;
     });
 });
 
-function deleteItem(id){
-    if(confirm("Delete this item?")) db.child(id).remove();
+// EDIT PRODUCT
+function editItem(id, nameVal, priceVal, imgVal){
+    editId = id;
+    document.getElementById("name").value = nameVal;
+    document.getElementById("price").value = priceVal;
+
+    document.getElementById("preview").src = imgVal;
+    document.getElementById("preview").style.display = "block";
+
+    document.getElementById(id).dataset.oldImg = imgVal;
+    addBtn.innerText = "UPDATE PRODUCT";
 }
 
-document.getElementById("logoutBtn").onclick = function(){
-    location.reload();
-};
+// DELETE PRODUCT
+function deleteItem(id){
+    if(confirm("Delete this product?")){
+        db.child(id).remove();
+    }
+}
 </script>
 
 </body>

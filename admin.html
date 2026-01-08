@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Login</title>
+    <title>Admin Panel</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -13,18 +13,16 @@
         h3 { text-align: center; }
         input, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 4px; border: 1px solid #ccc; box-sizing: border-box; }
         button { background: black; color: white; border: none; cursor: pointer; font-weight: bold; }
-        button:hover { opacity: 0.8; }
-        .card { background: white; border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .delete-btn { background: #ff4444; margin-top: 10px; font-size: 12px; }
+        .card { background: white; border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 8px; }
+        .delete-btn { background: #ff4444; margin-top: 10px; }
         #panel { display: none; }
     </style>
 </head>
 <body>
 
 <div id="login-section">
-    <h3>Admin Login</h3>
-    <input id="adminPass" type="password" placeholder="Enter Admin Password">
-    <button id="loginBtn">LOGIN</button>
+    <h3>Welcome Admin</h3>
+    <button id="loginBtn">ENTER ADMIN PANEL</button>
 </div>
 
 <div id="panel">
@@ -38,7 +36,7 @@
     <h3>Product List</h3>
     <div id="list"></div>
 
-    <button id="logoutBtn" style="background: #666;">LOGOUT</button>
+    <button id="logoutBtn" style="background: #666;">EXIT PANEL</button>
 </div>
 
 <script>
@@ -53,27 +51,13 @@ const firebaseConfig = {
     appId: "1:35954316540:web:7e2334cd5bfbceddd5b379"
 };
 
-// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database().ref("products");
 
-// ---------------- ADMIN PASSWORD ----------------
-const ADMIN_PASSWORD = "admin123"; 
-
-// ---------------- SELECTORS ----------------
-const loginSection = document.getElementById("login-section");
-const panel = document.getElementById("panel");
-const adminPassInput = document.getElementById("adminPass");
-const listDiv = document.getElementById("list");
-
-// ---------------- LOGIN ----------------
+// ---------------- DIRECT LOGIN ----------------
 document.getElementById("loginBtn").onclick = function(){
-    if(adminPassInput.value === ADMIN_PASSWORD){
-        loginSection.style.display = "none";
-        panel.style.display = "block";
-    } else {
-        alert("Wrong password!");
-    }
+    document.getElementById("login-section").style.display = "none";
+    document.getElementById("panel").style.display = "block";
 };
 
 // ---------------- ADD PRODUCT ----------------
@@ -83,46 +67,31 @@ document.getElementById("addBtn").onclick = function(){
     const imgVal = document.getElementById("img").value;
 
     if(nameVal && priceVal) {
-        db.push({
-            name: nameVal,
-            price: priceVal,
-            image: imgVal
-        });
-
-        // Clear inputs
+        db.push({ name: nameVal, price: priceVal, image: imgVal });
         document.getElementById("name").value = "";
         document.getElementById("price").value = "";
         document.getElementById("img").value = "";
-    } else {
-        alert("Please enter Name and Price");
     }
 };
 
 // ---------------- LIST PRODUCTS ----------------
 db.on("value", snap => {
+    const listDiv = document.getElementById("list");
     listDiv.innerHTML = "";
     snap.forEach(childSnap => {
         const item = childSnap.val();
-        const key = childSnap.key;
-        
         listDiv.innerHTML += `
         <div class="card">
-            <strong>${item.name}</strong><br>
-            Price: ₹${item.price}<br>
-            <small>Image: ${item.image}</small><br>
-            <button class="delete-btn" onclick="deleteItem('${key}')">DELETE</button>
+            <strong>${item.name}</strong> - ₹${item.price}
+            <button class="delete-btn" onclick="deleteItem('${childSnap.key}')">DELETE</button>
         </div>`;
     });
 });
 
-// ---------------- DELETE ITEM ----------------
 function deleteItem(id){
-    if(confirm("Are you sure you want to delete this product?")){
-        db.child(id).remove();
-    }
+    if(confirm("Delete this item?")) db.child(id).remove();
 }
 
-// ---------------- LOGOUT ----------------
 document.getElementById("logoutBtn").onclick = function(){
     location.reload();
 };

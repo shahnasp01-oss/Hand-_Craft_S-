@@ -6,213 +6,103 @@
     <title>HandNest | Handmade Decor</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial
-        }
-
-        body {
-            background: #f5f7fb;
-            color: #222
-        }
-
-        /* HEADER */
-        header {
-            background: #000;
-            color: #fff;
-            padding: 14px 18px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center
-        }
-
-        header h2 {
-            cursor: pointer
-        }
-
-        nav a {
-            color: #fff;
-            margin-left: 15px;
-            cursor: pointer;
-            text-decoration: none
-        }
-
-        /* HERO */
-        .hero {
-            background: url("https://images.unsplash.com/photo-1618220179428-22790b461013");
-            background-size: cover;
-            background-position: center;
-            height: 80vh;
-            display: flex;
-            align-items: center;
-            padding: 25px
-        }
-
-        .hero-box {
-            background: rgba(0, 0, 0, .55);
-            color: #fff;
-            padding: 25px;
-            border-radius: 14px;
-            max-width: 420px
-        }
-
-        .btn {
-            padding: 10px 18px;
-            background: #c9a14a;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer
-        }
-
-        /* SECTION */
-        section {
-            padding: 40px 20px;
-            max-width: 1100px;
-            margin: auto
-        }
-
-        section h2 {
-            text-align: center;
-            margin-bottom: 25px
-        }
-
-        /* PRODUCTS */
-        .products {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 20px
-        }
-
-        .card {
-            background: #fff;
-            border-radius: 16px;
-            box-shadow: 0 8px 18px rgba(0, 0, 0, .15);
-            overflow: hidden
-        }
-
-        .card img {
-            width: 100%;
-            height: 220px;
-            object-fit: cover;
-            cursor: pointer;
-            transition: .4s
-        }
-
-        .card img:hover {
-            transform: scale(1.05)
-        }
-
-        .info {
-            padding: 15px
-        }
-
-        .price {
-            font-weight: bold;
-            margin: 8px 0
-        }
-
-        button {
-            width: 100%;
-            padding: 10px;
-            background: #000;
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer
-        }
-
-        /* FOOTER */
-        footer {
-            background: #000;
-            color: #fff;
-            text-align: center;
-            padding: 25px;
-            margin-top: 40px
-        }
-
-        /* WHATSAPP */
-        .whatsapp {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: #25d366;
-            color: #fff;
-            padding: 14px;
-            border-radius: 50%;
-            cursor: pointer
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial }
+        body { background: #f5f7fb; color: #222 }
+        header { background: #000; color: #fff; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center }
+        nav a { color: #fff; margin-left: 15px; cursor: pointer }
+        .hero { background: url("https://images.unsplash.com/photo-1618220179428-22790b461013"); background-size: cover; height: 80vh; display: flex; align-items: center; padding: 25px }
+        .hero-box { background: rgba(0,0,0,.55); color:#fff; padding:25px; border-radius:14px; max-width:420px }
+        .btn { padding:10px 18px; background:#c9a14a; border-radius:8px; cursor:pointer }
+        section { padding:40px 20px; max-width:1100px; margin:auto }
+        .products { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:20px }
+        .card { background:#fff; border-radius:16px; box-shadow:0 8px 18px rgba(0,0,0,.15); overflow:hidden }
+        .card img { width:100%; height:220px; object-fit:cover; transition:.4s }
+        .card img:hover { transform:scale(1.05) }
+        .info { padding:15px }
+        .price { font-weight:bold; margin:8px 0 }
+        button { width:100%; padding:10px; background:#000; color:#fff; border-radius:8px; cursor:pointer }
+        footer { background:#000; color:#fff; text-align:center; padding:25px; margin-top:40px }
+        .whatsapp { position:fixed; bottom:20px; right:20px; background:#25d366; padding:14px; border-radius:50%; color:#fff; cursor:pointer }
     </style>
 </head>
 
 <body>
 
-    <header>
-        <h2 onclick="goHome()">HandNest</h2>
-        <nav>
-            <a onclick="goHome()">Home</a>
-            <a onclick="scrollProducts()">Products</a>
-        </nav>
-    </header>
+<header>
+    <h2 onclick="goHome()">HandNest</h2>
+    <nav>
+        <a onclick="goHome()">Home</a>
+        <a onclick="scrollProducts()">Products</a>
+    </nav>
+</header>
 
-    <div class="hero">
-        <div class="hero-box">
-            <h1>Handcrafted Wall & Table Decor</h1>
-            <p>Premium handmade decorations</p><br>
-            <span class="btn" onclick="scrollProducts()">Shop Now</span>
-        </div>
+<div class="hero">
+    <div class="hero-box">
+        <h1>Handcrafted Wall & Table Decor</h1>
+        <p>Premium handmade decorations</p><br>
+        <span class="btn" onclick="scrollProducts()">Shop Now</span>
     </div>
+</div>
 
-    <section id="products">
-        <h2>Featured Products</h2>
-        <div class="products" id="productBox"></div>
-    </section>
+<section id="products">
+    <h2>Featured Products</h2>
+    <div class="products" id="productBox"></div>
+</section>
 
-    <footer>
-        <p>© 2026 HandNest | Made in Assam</p>
-        <p>📞 9395666204</p>
-    </footer>
+<footer>
+    <p>© 2026 HandNest | Made in Assam</p>
+    <p>📞 9395666204</p>
+</footer>
 
-    <div class="whatsapp" onclick="whatsapp()">💬</div>
+<div class="whatsapp" onclick="whatsapp()">💬</div>
 
-    <script>
-const products = [
-  { name: "SunBloom Paper Wall Grid", price: "₹1,199", image: "image1.png" },
-  { name: "Vintage Melody Paper Wreath", price: "₹1,699", image: "image2.jpg" },
-  { name: "BloomCraft 3D Floral Wall Art", price: "₹2,999", image: "image3.avif" },
-  { name: "GeoWeave String Art (Set of 3)", price: "₹3,499", image: "image4.jpg" },
-  { name: "Boho Ring Floral Hanging", price: "₹2,199", image: "image6.jpg" },
-  { name: "Golden MoonTree Metal Art", price: "₹8,499", image: "image7.webp" },
+<script>
+// ---------------- FIREBASE CONFIG ----------------
+const firebaseConfig = {
+  apiKey: "AIzaSyDp70r1FmP-n5jPvZFtHa_cxn9J6iK5vJs",
+  authDomain: "handcraft-app-2e144.firebaseapp.com",
+  projectId: "handcraft-app-2e144",
+  storageBucket: "handcraft-app-2e144.firebasestorage.app",
+  messagingSenderId: "391900602122",
+  appId: "1:391900602122:web:48401b0de085608093a4f3",
+  databaseURL: "https://handcraft-app-2e144-default-rtdb.asia-southeast1.firebasedatabase.app"
+};
 
-  { name: "SunBloom Paper Wall Grid – Premium", price: "₹1,299", image: "img11.jpg" },
-  { name: "Aura Pleated Paper Medallion Set", price: "₹2,499", image: "img12.jpg" },
-  { name: "Whimsical Watercolor Heart Mobile", price: "₹999", image: "img13.webp" },
-  { name: "Ethereal White Blossom Ring", price: "₹1,149", image: "img14.jpg" },
-  { name: "Mint & Gold Leaf Laurel Wreath", price: "₹1,899", image: "img16.jpg" },
-  { name: "Lia Pastel 3D Floral Shadow Box", price: "₹3,299", image: "img17.jpg" },
-  { name: "Royal Bloom Lattice Wall Decor", price: "₹2,199", image: "img17.jfif" },
-  { name: "Garden Symphony Crepe Paper Wreath", price: "₹2,799", image: "img18.jpg" },
-  { name: "Radiant Sunflower & Butterfly Mural", price: "₹1,599", image: "img19.jpg" }
-];
+firebase.initializeApp(firebaseConfig);
 
+const db = firebase.database().ref("products");
+
+
+// ---------------- LOAD PRODUCTS ----------------
 function loadProducts() {
-  let box = document.getElementById("productBox");
-  box.innerHTML = "";
-  products.forEach(p => {
-    box.innerHTML += `
-    <div class="card">
-      <img src="${p.image}" onclick="openProduct('${p.name}','${p.price}','${p.image}')">
-      <div class="info">
-        <h4>${p.name}</h4>
-        <div class="price">${p.price}</div>
-        <button onclick="openProduct('${p.name}','${p.price}','${p.image}')">View</button>
-      </div>
-    </div>`;
-  });
+    const box = document.getElementById("productBox");
+    box.innerHTML = "Loading...";
+
+    db.on("value", snapshot => {
+        box.innerHTML = "";
+        snapshot.forEach(child => {
+            const p = child.val();
+
+            box.innerHTML += `
+                <div class="card">
+                    <img src="${p.image}" onclick="openProduct('${p.name}','${p.price}','${p.image}')">
+                    <div class="info">
+                        <h4>${p.name}</h4>
+                        <div class="price">₹ ${p.price}</div>
+                        <button onclick="openProduct('${p.name}','${p.price}','${p.image}')">View</button>
+                    </div>
+                </div>`;
+        });
+    });
 }
 
+
+// ---------------- OPEN PRODUCT ----------------
 function openProduct(n, p, i) {
   localStorage.setItem("p_name", n);
   localStorage.setItem("p_price", p);
@@ -235,10 +125,5 @@ function goHome() {
 window.onload = loadProducts;
 </script>
 
-
 </body>
-
-
 </html>
-
-

@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <script src="https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.7.0/firebase-database.js"></script>
 
 <style>
@@ -18,6 +17,7 @@ button{background:black;color:white;border:none}
 <body>
 
 <h3>Admin Login</h3>
+<input id="password" type="password" placeholder="Enter Admin Password">
 <button onclick="login()">LOGIN</button>
 
 <div id="panel" style="display:none">
@@ -44,35 +44,37 @@ const firebaseConfig = {
   messagingSenderId: "35954316540",
   appId: "1:35954316540:web:7e2334cd5bfbceddd5b379"
 };
-
 firebase.initializeApp(firebaseConfig);
 
-const auth = firebase.auth();
 const db = firebase.database().ref("products");
 
+// ---------------- LOGIN ----------------
+const ADMIN_PASS = "admin123";  // <-- YOUR PASSWORD
+
 function login(){
-  auth.signInWithEmailAndPassword(email.value,password.value)
-    .catch(e=>alert(e.message));
-}
-auth.onAuthStateChanged(user=>{
-  if(user){
-    document.querySelector("h3").style.display="none";
-    email.style.display="none";
-    password.style.display="none";
-    document.querySelector("button").style.display="none";
-    panel.style.display="block";
+  if(password.value === ADMIN_PASS){
+      document.querySelector("h3").style.display="none";
+      password.style.display="none";
+      document.querySelector("button").style.display="none";
+      panel.style.display="block";
+  } else {
+      alert("Wrong password!");
   }
-});
+}
 
-
+// -------------- ADD PRODUCT -------------
 function add(){
   db.push({
     name: name.value,
     price: price.value,
     image: img.value
   });
+  name.value = "";
+  price.value = "";
+  img.value = "";
 }
 
+// -------------- LIST PRODUCTS -----------
 db.on("value", snap=>{
   list.innerHTML="";
   snap.forEach(x=>{
@@ -85,12 +87,11 @@ db.on("value", snap=>{
   });
 });
 
+// -------------- LOGOUT ------------------
 function logout(){
-  auth.signOut();
   location.reload();
 }
 </script>
-
 
 </body>
 </html>
